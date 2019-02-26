@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -32,6 +33,8 @@ public class RobotMap {
         rightBack = hwMap.get(DcMotor.class, "rightBack");
         leftFront = hwMap.get(DcMotor.class, "leftFront");
         leftBack = hwMap.get(DcMotor.class, "leftBack");
+
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
     }
 
 
