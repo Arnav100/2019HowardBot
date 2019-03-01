@@ -21,8 +21,6 @@ public class TestOpMode extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("Status", "Running");
-            telemetry.addData("G1", RobotMap.g1.left_stick_y);
-            telemetry.addData("G2", RobotMap.g2.left_stick_y);
             telemetry.update();
             Robot.driveTrain.drive();
 
