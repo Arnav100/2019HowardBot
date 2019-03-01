@@ -24,16 +24,14 @@ public class FishDetector extends DogeCVDetector {
         Mat bitmask = new Mat();
 
         // Core.inRange(rgba, new Scalar(127, 50, 0), new Scalar(255, 127, 50), bitmask);
-        Core.inRange(rgba, new Scalar(50, 50, 50), new Scalar(255, 255, 255), bitmask);
+        Core.inRange(rgba, new Scalar(233, 0, 0, 0), new Scalar(255, 150, 122, 255), bitmask);
 
         ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
         Imgproc.findContours(bitmask, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
         if(contours.isEmpty()) {
-            x = Double.NaN;
-            y = Double.NaN;
-            return rgba;
+            return bitmask;
         }
 
         MatOfPoint largest = contours.get(0);
@@ -47,10 +45,10 @@ public class FishDetector extends DogeCVDetector {
         Moments m = Imgproc.moments(largest);
 
         // Center of mass of contour
-        x = m.m10 / m.m00 / rgba.width();
-        y = m.m01 / m.m00 / rgba.height();
+        x = m.m10 / m.m00 / rgba.width() - 0.5;
+        y = m.m01 / m.m00 / rgba.height() - 0.5;
 
-        return rgba;
+        return bitmask;
     }
     @Override
     public void useDefaults() {
