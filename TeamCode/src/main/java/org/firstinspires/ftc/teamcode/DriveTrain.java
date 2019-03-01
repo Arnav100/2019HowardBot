@@ -21,9 +21,13 @@ public class DriveTrain {
         // No normalization needed since the d-pad is circular
 
         // leftFront is inverted
-        RobotMap.leftFront.setPower(-(x + y) / 2);
-        RobotMap.rightFront.setPower((-x + y) / 2);
-        RobotMap.leftBack.setPower((-x + y) / 2);
-        RobotMap.rightBack.setPower((x + y) / 2);
+        RobotMap.leftFront.setPower(-ensureRange(x + y));
+        RobotMap.rightFront.setPower(ensureRange(-x + y));
+        RobotMap.leftBack.setPower(ensureRange(-x + y));
+        RobotMap.rightBack.setPower(ensureRange(x + y));
+    }
+
+    private double ensureRange(double value) {
+        return Math.min(Math.max(value, -1), 1);
     }
 }
