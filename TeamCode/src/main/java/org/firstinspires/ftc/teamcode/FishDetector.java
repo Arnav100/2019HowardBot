@@ -24,7 +24,7 @@ public class FishDetector extends DogeCVDetector {
 
         Mat bitmask = new Mat();
 
-        Core.inRange(rgba, new Scalar(220, 0, 0, 0), new Scalar(255, 160, 130, 255), bitmask);
+        Core.inRange(rgba, new Scalar(215, 0, 0, 0), new Scalar(255, 165, 135, 255), bitmask);
 
         ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 
@@ -50,6 +50,10 @@ public class FishDetector extends DogeCVDetector {
         // Center of mass of contour
         x = m.m10 / m.m00 / rgba.width() - 0.5;
         y = m.m01 / m.m00 / rgba.height() - 0.5;
+
+        // Don't move too fast!
+        x /= 2;
+        y /= 2;
 
         Mat dst = new Mat();
         rgba.copyTo(dst, bitmask);
