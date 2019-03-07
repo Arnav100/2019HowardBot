@@ -2,68 +2,89 @@ package org.firstinspires.ftc.teamcode;
 
 public class DriveTrain {
 
+    private double[] desiredVals;
+    public double[] currentVals;
+
+    public DriveTrain()
+    {
+        reset();
+    }
+
+    public void reset() {
+        desiredVals = new double[2];
+        currentVals = new double[2];
+    }
 
     public void drive()
     {
-    //    move(0.2, 0.2);
-        mecanumDrive(0.2,0.5, 0);
-
+        mecanumMove(RobotMap.g1.right_stick_x, RobotMap.g1.right_stick_y);
     }
 
     public void move(double rightSpeed, double leftSpeed)
     {
-        RobotMap.tel.addData("RightSpeed: " ,rightSpeed);
         RobotMap.rightFront.setPower(rightSpeed);
         RobotMap.rightBack.setPower(rightSpeed);
         RobotMap.leftFront.setPower(leftSpeed);
         RobotMap.leftBack.setPower(leftSpeed);
     }
 
-    public void mecanumDrive2(double x, double y)
+    public void sigmoidMecanumMove(double x, double y, double a)
     {
-        RobotMap.leftFront.setPower((x + y) / 2);
-        RobotMap.rightFront.setPower((-x + y) / 2);
-        RobotMap.leftBack.setPower((-x + y) / 2);
-        RobotMap.rightBack.setPower((x + y) / 2);
+        x = getSigVal(x, true, a);
+        y = getSigVal(y, false, a);
+        mecanumMove(x, y);
     }
 
-    public void mecanumDrive(double x, double y, double rotation)
+    private double getSigVal(double val, boolean isX, double a)
     {
-        double wheelSpeeds[] = new double[4];
+        //Determines the index of the array, left - 0, right - 1
+        int index = 0;
+        if(isX)
+            index = 1;
 
-        wheelSpeeds[0] = x + y + rotation;
-        wheelSpeeds[1] = -x + y - rotation;
-        wheelSpeeds[2] = -x + y + rotation;
-        wheelSpeeds[3] = x + y - rotation;
+        //The sigmoid function can never reach 1 or -1, so this caps the input
+        if(val > 0.99 || val < -0.99)
+            val = val * 0.99;
 
-        normalize(wheelSpeeds);
-        RobotMap.tel.addData("wheelSpeed 0: " , wheelSpeeds[0]);
-        RobotMap.leftFront.setPower(wheelSpeeds[0]);
-        RobotMap.rightFront.setPower(wheelSpeeds[1]);
-        RobotMap.leftBack.setPower(wheelSpeeds[2]);
-        RobotMap.rightBack.setPower(wheelSpeeds[3]);
-    }   //mecanumDrive_Cartesian
-
-    private void normalize(double[] wheelSpeeds)
-    {
-        double maxMagnitude = Math.abs(wheelSpeeds[0]);
-
-        for (int i = 1; i < wheelSpeeds.length; i++)
-        {
-            double magnitude = Math.abs(wheelSpeeds[i]);
-
-            if (magnitude > maxMagnitude)
-            {
-                maxMagnitude = magnitude;
-            }
+        //Records the desired speed, and if that has been roughly reached by
+        //the function, return the desired speed.
+        desiredVals[index] = val;
+        if (Math.abs(desiredVals[index] - currentVals[index]) < 0.01) {
+            return desiredVals[index];
         }
 
-        if (maxMagnitude > 1.0)
-        {
-            for (int i = 0; i < wheelSpeeds.length; i++)
-            {
-                wheelSpeeds[i] /= maxMagnitude;
-            }
-        }
-    }   //normalize
+        //Calculates the current x value in the function
+        double startTime = inverseSig(currentVals[index], a);
+
+        //Used to get the next value the robot should use
+        double cycleTime = 0.02;
+        if (desiredVals[index] < currentVals[index])
+            cycleTime = -cycleTime;
+
+        return sigmoid(startTime + cycleTime, a);
+    }
+
+    private double sigmoid(double time, double a) {
+        return 1 / (1 + Math.pow(Math.E, -time * a)) ;
+    }
+
+
+    private double inverseSig(double speed, double a) {
+        return -Math.log(1 / (speed) - 1) / a;
+    }
+
+    public void mecanumMove(double x, double y)
+    {
+        // No normalization needed since the d-pad is circular
+
+        // leftFront is inverted
+        RobotMap.leftFront.setPower(-ensureRange(x + y));
+        RobotMap.rightFront.setPower(ensureRange(-x + y));
+        RobotMap.leftBack.setPower(ensureRange(-x + y));
+        RobotMap.rightBack.setPower(ensureRange(x + y));
+    }
+
+    private double ensureRange(double value) {
+        return Math.min(Math.max(value, -1), 1);
+    }
 }
