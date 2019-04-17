@@ -5,6 +5,7 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.OpenCVPipeline;
 import com.disnodeteam.dogecv.detectors.DogeCVDetector;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,9 +13,9 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 
-@TeleOp
+@Autonomous
 
-public class FishOpMode extends LinearOpMode {
+public class FishAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {

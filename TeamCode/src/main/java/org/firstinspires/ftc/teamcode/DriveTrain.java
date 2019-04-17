@@ -17,13 +17,13 @@ public class DriveTrain {
 
     public void drive()
     {
-        mecanumMove(RobotMap.g1.right_stick_x, RobotMap.g1.right_stick_y);
+        sigmoidMecanumMove(RobotMap.g1.right_stick_x, RobotMap.g1.right_stick_y, 10);
     }
 
     public void move(double rightSpeed, double leftSpeed)
     {
         RobotMap.rightFront.setPower(rightSpeed);
-        RobotMap.rightBack.setPower(rightSpeed);
+        RobotMap.rightBack.setPower(rightSpeed);git a
         RobotMap.leftFront.setPower(leftSpeed);
         RobotMap.leftBack.setPower(leftSpeed);
     }
@@ -65,12 +65,12 @@ public class DriveTrain {
     }
 
     private double sigmoid(double time, double a) {
-        return 1 / (1 + Math.pow(Math.E, -time * a)) ;
+        return (1 / (1 + Math.pow(Math.E, -time * a))) -0.5;
     }
 
 
     private double inverseSig(double speed, double a) {
-        return -Math.log(1 / (speed) - 1) / a;
+        return -Math.log(1 / (speed + 0.5) - 1) / a;
     }
 
     public void mecanumMove(double x, double y)
